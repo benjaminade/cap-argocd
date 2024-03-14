@@ -7,8 +7,8 @@ spec:
   project: default
 
   source: 
-    repoURL: https://github.com:benjaminade/cap-argocd.git
-    targetRevision: main
+    repoURL: https://github.com/benjaminade/cap-argocd.git
+    targetRevision: HEAD
     path: test-app-deploy
   destination: 
     server: https://kubernetes.default.svc
