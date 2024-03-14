@@ -1,14 +1,14 @@
 apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata: 
-  name: myapp-argo-application
+  name: benade-app-argo-application
   namespace: argocd
 spec: 
   project: default
 
   source: 
     repoURL: https://github.com:benjaminade/cap-argocd.git
-    targetRevision: HEAD
+    targetRevision: main
     path: test-app-deploy
   destination: 
     server: https://kubernetes.default.svc
