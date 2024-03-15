@@ -1,4 +1,4 @@
-name: Install ArgoCD on EKS
+name: Install EFK stack
 
 on:
   push:
