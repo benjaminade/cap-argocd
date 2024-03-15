@@ -58,6 +58,7 @@ jobs:
       - name: Install ArgoCD
         run: |
           cd argocd
+          chmod 700 create-ns-argocd.sh
           ./create-ns-argocd.sh
           kubectl apply -f install_argocd.yml
           # kubectl create namespace argocd
