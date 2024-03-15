@@ -25,6 +25,8 @@ jobs:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }} 
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: us-east-1
+      - name: Update kubeconfig
+        run: aws eks update-kubeconfig --name benade-eks-1QDOr2Bg --region us-east-1
 
       # - name: Set up kubectl
       #   uses: azure/k8s-set-context@v1
