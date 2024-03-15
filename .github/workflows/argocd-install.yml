@@ -9,6 +9,10 @@ jobs:
   install_argocd:
     runs-on: ubuntu-latest
 
+    # env:
+    #     AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+    #     AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+
     steps:
       - name: Checkout repository
         uses: actions/checkout@v2
@@ -53,8 +57,13 @@ jobs:
 
       - name: Install ArgoCD
         run: |
+          # kubectl create namespace argocd
+          # kubectl apply -n argocd -f https://raw.githubusercontent.com/argoproj/argo-cd/stable/manifests/install.yaml
           kubectl create namespace argocd
-          kubectl apply -n argocd -f https://raw.githubusercontent.com/argoproj/argo-cd/v2.10.2/manifests/install.yaml 
+          #kubectl apply -n argocd -f https://raw.githubusercontent.com/argoproj/argo-cd/v2.4.7/manifests/install.yaml
+
+          # kubectl create namespace argocd
+          # kubectl apply -n argocd -f https://raw.githubusercontent.com/argoproj/argo-cd/v2.10.2/manifests/install.yaml 
           # helm repo add argo https://argoproj.github.io/argo-helm
           # helm install argocd argo/argo-cd -n argocd
           # sleep 30  # Wait for ArgoCD pods to start
