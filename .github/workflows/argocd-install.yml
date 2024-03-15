@@ -57,12 +57,13 @@ jobs:
 
       - name: Install ArgoCD
         run: |
-          cd argocd
-          chmod 700 create-ns-argocd.sh
-          ./create-ns-argocd.sh
-          kubectl apply -f install_argocd.yml
-          # kubectl create namespace argocd
-          # kubectl apply -n argocd -f https://raw.githubusercontent.com/argoproj/argo-cd/stable/manifests/install.yaml
+          aws eks update-kubeconfig --name benade-eks-1QDOr2Bg --region us-east-1
+          # cd argocd
+          # chmod 700 create-ns-argocd.sh
+          # ./create-ns-argocd.sh
+          # kubectl apply -f install_argocd.yml
+           kubectl create namespace argocd
+           kubectl apply -n argocd -f https://raw.githubusercontent.com/argoproj/argo-cd/stable/manifests/install.yaml
           # kubectl create namespace argocd
           # kubectl apply -n argocd -f https://raw.githubusercontent.com/argoproj/argo-cd/v2.4.7/manifests/install.yaml
 
