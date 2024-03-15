@@ -6,81 +6,93 @@ on:
       - main  # Adjust the branch name as needed
 
 jobs:
-  install_argocd:
-    runs-on: ubuntu-latest
-    env:
-          KUBECONFIG: ${{ steps.update-kubeconfig.outputs.kubeconfig }}
+
+    kubeconfig_update:
+      name: Update kubeconfig
+      runs-on: ubuntu-latest
+      # needs: terraform
+      steps:
+        - name: Checkout
+          uses: actions/checkout@v3
+
+        - name: Configure Kubeconfig
+          run: aws eks update-kubeconfig --name benade-eks-1QDOr2Bg --region us-east-1
+
+    install_argocd:
+      runs-on: ubuntu-latest
+      #env:
+        #KUBECONFIG: ${{ steps.update-kubeconfig.outputs.kubeconfig }}
 
     # env:
     #     AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
     #     AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
 
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v2
+      steps:
+          - name: Checkout repository
+            uses: actions/checkout@v2
 
-      - name: Configure AWS credentials
-        uses: aws-actions/configure-aws-credentials@v4.0.2
-        with:
-          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }} 
-          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          aws-region: us-east-1
-      - name: Update kubeconfig
-        id: update-kubeconfig
-        run: echo "::set-output name=kubeconfig::$(aws eks update-kubeconfig --name benade-eks-1QDOr2Bg --region us-east-1 --dry-run)"
+          - name: Configure AWS credentials
+            uses: aws-actions/configure-aws-credentials@v4.0.2
+            with:
+              aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }} 
+              aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+              aws-region: us-east-1
+         # - name: Update kubeconfig
+          #  id: update-kubeconfig
+           # run: echo "::set-output name=kubeconfig::$(aws eks update-kubeconfig --name benade-eks-1QDOr2Bg --region us-east-1 --dry-run)"
 
-      # - name: Set up kubectl
-      #   uses: azure/k8s-set-context@v1
-      #   with:
-      #     kubeconfig: ${{ secrets.KUBE_CONFIG_DATA }}  # Specify your Kubernetes configuration file as a secret
+          # - name: Set up kubectl
+          #   uses: azure/k8s-set-context@v1
+          #   with:
+          #     kubeconfig: ${{ secrets.KUBE_CONFIG_DATA }}  # Specify your Kubernetes configuration file as a secret
 
-      - name: Set up kubectl
-        run: |
-          curl -LO "https://dl.k8s.io/release/$(curl -L -s https://dl.k8s.io/release/stable.txt)/bin/linux/amd64/kubectl"
-          curl -LO "https://dl.k8s.io/release/$(curl -L -s https://dl.k8s.io/release/stable.txt)/bin/linux/amd64/kubectl.sha256"
-          echo "$(cat kubectl.sha256)  kubectl" | sha256sum --check
-          sudo install -o root -g root -m 0755 kubectl /usr/local/bin/kubectl
+          - name: Set up kubectl
+            run: |
+              curl -LO "https://dl.k8s.io/release/$(curl -L -s https://dl.k8s.io/release/stable.txt)/bin/linux/amd64/kubectl"
+              curl -LO "https://dl.k8s.io/release/$(curl -L -s https://dl.k8s.io/release/stable.txt)/bin/linux/amd64/kubectl.sha256"
+              echo "$(cat kubectl.sha256)  kubectl" | sha256sum --check
+              sudo install -o root -g root -m 0755 kubectl /usr/local/bin/kubectl
 
-          # sudo apt-get update
-          # sudo apt-get install -y apt-transport-https ca-certificates curl
-          # curl -fsSL https://pkgs.k8s.io/core:/stable:/v1.29/deb/Release.key | sudo gpg --dearmor -o /etc/apt/keyrings/kubernetes-apt-keyring.gpg
-          # echo 'deb [signed-by=/etc/apt/keyrings/kubernetes-apt-keyring.gpg] https://pkgs.k8s.io/core:/stable:/v1.29/deb/ /' | sudo tee /etc/apt/sources.list.d/kubernetes.list
-          # sudo apt-get update
-          # sudo apt-get install -y kubectl
+              # sudo apt-get update
+              # sudo apt-get install -y apt-transport-https ca-certificates curl
+              # curl -fsSL https://pkgs.k8s.io/core:/stable:/v1.29/deb/Release.key | sudo gpg --dearmor -o /etc/apt/keyrings/kubernetes-apt-keyring.gpg
+              # echo 'deb [signed-by=/etc/apt/keyrings/kubernetes-apt-keyring.gpg] https://pkgs.k8s.io/core:/stable:/v1.29/deb/ /' | sudo tee /etc/apt/sources.list.d/kubernetes.list
+              # sudo apt-get update
+              # sudo apt-get install -y kubectl
 
-          # sudo apt-get install -y apt-transport-https gnupg2 curl
-          # curl -s https://packages.cloud.google.com/apt/doc/apt-key.gpg | sudo apt-key add -
-          # echo "deb https://apt.kubernetes.io/ kubernetes-xenial main" | sudo tee /etc/apt/sources.list.d/kubernetes.list
-          # sudo apt-get update
-          # sudo apt-get install -y kubectl
+              # sudo apt-get install -y apt-transport-https gnupg2 curl
+              # curl -s https://packages.cloud.google.com/apt/doc/apt-key.gpg | sudo apt-key add -
+              # echo "deb https://apt.kubernetes.io/ kubernetes-xenial main" | sudo tee /etc/apt/sources.list.d/kubernetes.list
+              # sudo apt-get update
+              # sudo apt-get install -y kubectl
 
-      - name: Install Helm
-        run: |
-          curl -fsSL -o get_helm.sh https://raw.githubusercontent.com/helm/helm/master/scripts/get-helm-3
-          chmod 700 get_helm.sh
-          ./get_helm.sh 
+          - name: Install Helm
+            run: |
+              curl -fsSL -o get_helm.sh https://raw.githubusercontent.com/helm/helm/master/scripts/get-helm-3
+              chmod 700 get_helm.sh
+              ./get_helm.sh 
 
-      - name: Install ArgoCD
-        run: |
-          # aws eks update-kubeconfig --name benade-eks-1QDOr2Bg --region us-east-1
-          # cd argocd
-          # chmod 700 create-ns-argocd.sh
-          # ./create-ns-argocd.sh
-          # kubectl apply -f install_argocd.yml
-           kubectl create namespace argocd
-           kubectl apply -n argocd -f https://raw.githubusercontent.com/argoproj/argo-cd/stable/manifests/install.yaml
-          # kubectl create namespace argocd
-          # kubectl apply -n argocd -f https://raw.githubusercontent.com/argoproj/argo-cd/v2.4.7/manifests/install.yaml
+          - name: Install ArgoCD
+            run: |
+              # aws eks update-kubeconfig --name benade-eks-1QDOr2Bg --region us-east-1
+              # cd argocd
+              # chmod 700 create-ns-argocd.sh
+              # ./create-ns-argocd.sh
+              # kubectl apply -f install_argocd.yml
+              kubectl create namespace argocd
+              kubectl apply -n argocd -f https://raw.githubusercontent.com/argoproj/argo-cd/stable/manifests/install.yaml
+              # kubectl create namespace argocd
+              # kubectl apply -n argocd -f https://raw.githubusercontent.com/argoproj/argo-cd/v2.4.7/manifests/install.yaml
 
-          # kubectl create namespace argocd
-          # kubectl apply -n argocd -f https://raw.githubusercontent.com/argoproj/argo-cd/v2.10.2/manifests/install.yaml 
-          # helm repo add argo https://argoproj.github.io/argo-helm
-          # helm install argocd argo/argo-cd -n argocd
-          # sleep 30  # Wait for ArgoCD pods to start
+              # kubectl create namespace argocd
+              # kubectl apply -n argocd -f https://raw.githubusercontent.com/argoproj/argo-cd/v2.10.2/manifests/install.yaml 
+              # helm repo add argo https://argoproj.github.io/argo-helm
+              # helm install argocd argo/argo-cd -n argocd
+              # sleep 30  # Wait for ArgoCD pods to start
 
-      - name: Get ArgoCD admin password
-        run: |
-          kubectl -n argocd get secret argocd-initial-admin-secret -o jsonpath='{.data.password}' | base64 -dAdd Kubernetes configuration as a secret:
+          - name: Get ArgoCD admin password
+            run: |
+              kubectl -n argocd get secret argocd-initial-admin-secret -o jsonpath='{.data.password}' | base64 -dAdd Kubernetes configuration as a secret:
 
 
 
