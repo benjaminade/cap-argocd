@@ -30,6 +30,20 @@ jobs:
       - name: Update kubeconfig
         run: aws eks update-kubeconfig --name benade-eks-1QDOr2Bg --region us-east-1
 
+      - name: Deploy EFK stack
+        working-directory: logging
+        run: |
+          kubectl apply -f .
+
+
+
+
+
+
+
+
+
+
       # - name: Install Helm
       #   #id: helm-install
       #   run: |
@@ -37,20 +51,20 @@ jobs:
       #     chmod 700 get_helm.sh
       #     ./get_helm.sh 
 
-      - name: Install ArgoCD
+      # - name: Install ArgoCD
       
-        run: |
-          kubectl create namespace argocd
-          kubectl apply -n argocd -f https://raw.githubusercontent.com/argoproj/argo-cd/v2.4.7/manifests/install.yaml
+      #   run: |
+      #     kubectl create namespace argocd
+      #     kubectl apply -n argocd -f https://raw.githubusercontent.com/argoproj/argo-cd/v2.4.7/manifests/install.yaml
 
-          #kubectl create namespace argocd
-          # helm repo add argo https://argoproj.github.io/argo-helm
-          # helm install argocd argo/argo-cd -n argocd
-          # sleep 30  # Wait for ArgoCD pods to start
+      #     #kubectl create namespace argocd
+      #     # helm repo add argo https://argoproj.github.io/argo-helm
+      #     # helm install argocd argo/argo-cd -n argocd
+      #     # sleep 30  # Wait for ArgoCD pods to start
 
-      - name: Get ArgoCD admin password
-        run: |
-          kubectl -n argocd get secret argocd-initial-admin-secret -o jsonpath='{.data.password}' | base64
+      # - name: Get ArgoCD admin password
+      #   run: |
+      #     kubectl -n argocd get secret argocd-initial-admin-secret -o jsonpath='{.data.password}' | base64
 
 # name: Install ArgoCD on EKS
 
