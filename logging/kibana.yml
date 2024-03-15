@@ -17,7 +17,7 @@ spec:
         name: kibana
     spec:
       containers:
-       - image: kibana
+       - image: docker.elastic.co/kibana/kibana:7.10.2
          name: kibana
          ports:
           - name: kibana

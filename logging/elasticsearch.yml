@@ -1,40 +1,55 @@
 ---
 apiVersion: apps/v1
-kind: Deployment
+kind: StatefulSet
 metadata:
   name: elasticsearch
-  labels:
-    name: elasticsearch
   namespace: kube-system
 spec:
-  replicas: 1
+  serviceName: elasticsearch
+  replicas: 3
   selector:
     matchLabels:
-      name: elasticsearch
+      app: elasticsearch
   template:
     metadata:
       labels:
-        name: elasticsearch
+        app: elasticsearch
     spec:
       containers:
-       - image: elasticsearch
-         name: elasticsearch
-         ports:
-          - name: elasticsearch
-            containerPort: 9200
-      nodeSelector:
-        beta.kubernetes.io/os: linux
+      - name: elasticsearch
+        image: docker.elastic.co/elasticsearch/elasticsearch:7.15.1
+        ports:
+        - containerPort: 9200
+        - containerPort: 9300
+        resources:
+          limits:
+            cpu: "1"
+            memory: "2Gi"
+          requests:
+            cpu: "0.5"
+            memory: "1Gi"
+        env:
+        - name: discovery.type
+          value: single-node
+        readinessProbe:
+          httpGet:
+            path: /_cluster/health
+            port: 9200
+          initialDelaySeconds: 30
+          periodSeconds: 10
+          timeoutSeconds: 5
+          successThreshold: 1
+          failureThreshold: 3
 ---
 apiVersion: v1
 kind: Service
 metadata:
   name: elasticsearch
-  labels:
-    name: elasticsearch
   namespace: kube-system
 spec:
-  ports:
-  - port: 9200
-    targetPort: 9200
   selector:
-    name: elasticsearch
+    app: elasticsearch
+  ports:
+  - protocol: TCP
+    port: 9200
+    targetPort: 9200
