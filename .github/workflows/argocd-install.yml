@@ -30,6 +30,13 @@ jobs:
       - name: Update kubeconfig
         run: aws eks update-kubeconfig --name benade-eks-1QDOr2Bg --region us-east-1
 
+      - name: Install Helm
+        #id: helm-install
+        run: |
+          curl -fsSL -o get_helm.sh https://raw.githubusercontent.com/helm/helm/master/scripts/get-helm-3
+          chmod 700 get_helm.sh
+          ./get_helm.sh 
+
       - name: Install ArgoCD
         run: |
           #kubectl create namespace argocd
