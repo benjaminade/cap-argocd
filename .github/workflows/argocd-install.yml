@@ -30,12 +30,12 @@ jobs:
       - name: Update kubeconfig
         run: aws eks update-kubeconfig --name benade-eks-1QDOr2Bg --region us-east-1
 
-      - name: Install Helm
-        #id: helm-install
-        run: |
-          curl -fsSL -o get_helm.sh https://raw.githubusercontent.com/helm/helm/master/scripts/get-helm-3
-          chmod 700 get_helm.sh
-          ./get_helm.sh 
+      # - name: Install Helm
+      #   #id: helm-install
+      #   run: |
+      #     curl -fsSL -o get_helm.sh https://raw.githubusercontent.com/helm/helm/master/scripts/get-helm-3
+      #     chmod 700 get_helm.sh
+      #     ./get_helm.sh 
 
       - name: Install ArgoCD
       
@@ -50,7 +50,7 @@ jobs:
 
       - name: Get ArgoCD admin password
         run: |
-          kubectl -n argocd get secret argocd-initial-admin-secret -o jsonpath='{.data.password}' | base64 -dAdd Kubernetes configuration as a secret:
+          kubectl -n argocd get secret argocd-initial-admin-secret -o jsonpath='{.data.password}' | base64
 
 # name: Install ArgoCD on EKS
 
