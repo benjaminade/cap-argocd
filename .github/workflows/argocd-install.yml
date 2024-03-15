@@ -38,11 +38,15 @@ jobs:
           ./get_helm.sh 
 
       - name: Install ArgoCD
+      
         run: |
+          kubectl create namespace argocd
+          kubectl apply -n argocd -f https://raw.githubusercontent.com/argoproj/argo-cd/v2.4.7/manifests/install.yaml
+
           #kubectl create namespace argocd
-          helm repo add argo https://argoproj.github.io/argo-helm
-          helm install argocd argo/argo-cd -n argocd
-          sleep 30  # Wait for ArgoCD pods to start
+          # helm repo add argo https://argoproj.github.io/argo-helm
+          # helm install argocd argo/argo-cd -n argocd
+          # sleep 30  # Wait for ArgoCD pods to start
 
       - name: Get ArgoCD admin password
         run: |
