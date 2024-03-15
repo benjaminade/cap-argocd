@@ -1,0 +1,95 @@
+name: Install ArgoCD on EKS
+
+on:
+  push:
+    branches:
+      - main  # Adjust the branch name as needed
+
+jobs:
+  install_argocd:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
+
+      - name: Set up kubectl
+        uses: azure/k8s-set-context@v1
+        with:
+          kubeconfig: ${{ secrets.KUBE_CONFIG_DATA }}  # Specify your Kubernetes configuration file as a secret
+
+      - name: Install Helm
+        run: |
+          curl -fsSL -o get_helm.sh https://raw.githubusercontent.com/helm/helm/master/scripts/get-helm-3
+          chmod 700 get_helm.sh
+          ./get_helm.sh 
+
+      - name: Install ArgoCD
+        run: |
+          kubectl create namespace argocd
+          helm repo add argo https://argoproj.github.io/argo-helm
+          helm install argocd argo/argo-cd -n argocd
+          sleep 30  # Wait for ArgoCD pods to start
+
+      - name: Get ArgoCD admin password
+        run: |
+          kubectl -n argocd get secret argocd-initial-admin-secret -o jsonpath='{.data.password}' | base64 -dAdd Kubernetes configuration as a secret:
+
+
+
+
+
+
+
+
+
+
+# name: Terraform Deployment
+
+# on:
+#   push:
+#     branches:
+#       - main
+
+# jobs:
+#   terraform:
+#     name: create s3 bucket and dynamodb table locking
+#     runs-on: ubuntu-latest
+#     # env:
+#     #   AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+#     #   AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+#     # defaults:
+#     #   run:
+#     #     working-directory: ./backend
+  
+#     steps:
+#       - name: Checkout code
+#         uses: actions/checkout@v2
+
+#       - name: Configure AWS credentials
+#         uses: aws-actions/configure-aws-credentials@v4.0.2
+#         with:
+#           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+#           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+#           aws-region: us-east-1
+
+#       - name: Setup Terraform
+#         uses: hashicorp/setup-terraform@v1
+#         with:
+#           terraform_version: 1.1.0
+
+#       - name: Create s3 bucket
+#         working-directory: ./backend
+#         run: |
+#           terraform init
+#           terraform apply -auto-approve -input=false
+      
+#       - name: Create ec2
+#         working-directory: ./my_ec2
+#         run: |
+#           terraform init
+#           terraform apply -auto-approve -input=false
+#           # cd ./backend
+#           # terraform init
+#           # terraform apply -auto-approve
+     
